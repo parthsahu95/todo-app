@@ -84,8 +84,9 @@ function App() {
                 setInputValue(e.target.value);
               }}></input>
             <button
+              disabled={!inputValue}
               onClick={addTodo}
-              className="bg-[#61dafb] text-white px-4 py-2 rounded font-bold">
+              className="bg-[#61dafb] text-white px-4 py-2 rounded font-bold disabled:bg-gray-300">
               Add Todo
             </button>
           </div>
