@@ -10,6 +10,7 @@ function App() {
   const [todos, setTodos] = useState([]);
 
   const addTodo = () => {
+    if (!inputValue) return;
     setTodos((prev) => [
       ...prev,
       { id: uuid(), task: inputValue, completed: false, editMode: false },
@@ -21,11 +22,47 @@ function App() {
     setTodos((prev) => prev.filter((obj) => obj.id !== selectedId));
   };
 
+  const editTodo = (selectedId) => {
+    setTodos((prev) =>
+      prev.map((obj) => {
+        if (obj.id === selectedId) {
+          return { ...obj, editMode: true };
+        } else {
+          return obj;
+        }
+      })
+    );
+  };
+
+  const stopEditMode = (selectedId) => {
+    setTodos((prev) =>
+      prev.map((obj) => {
+        if (obj.id === selectedId) {
+          return { ...obj, editMode: false };
+        } else {
+          return obj;
+        }
+      })
+    );
+  };
+
   const handleCheckboxChange = (e, selectedId) => {
     setTodos((prev) =>
       prev.map((obj) => {
         if (obj.id === selectedId) {
           return { ...obj, completed: e.target.checked };
+        } else {
+          return obj;
+        }
+      })
+    );
+  };
+
+  const handleTodoInputChange = (e, selectedId) => {
+    setTodos((prev) =>
+      prev.map((obj) => {
+        if (obj.id === selectedId) {
+          return { ...obj, task: e.target.value };
         } else {
           return obj;
         }
@@ -65,14 +102,66 @@ function App() {
                     onChange={(e) => {
                       handleCheckboxChange(e, todo.id);
                     }}></input>
+                  {todo.editMode ? (
+                    <input
+                      className=" text-white bg-transparent border border-white rounded focus:border-0 pl-2"
+                      type="text"
+                      value={todo.task}
+                      onChange={(e) => {
+                        handleTodoInputChange(e, todo.id);
+                      }}></input>
+                  ) : (
+                    <div
+                      className={`${
+                        todo.completed && "line-through text-gray-500"
+                      } mb-1`}>
+                      {todo.task}
+                    </div>
+                  )}
+                  {todo.editMode ? (
+                    <div
+                      className="ml-auto cursor-pointer"
+                      onClick={() => {
+                        stopEditMode(todo.id);
+                      }}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-6 h-6 hover:text-green-500">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="m4.5 12.75 6 6 9-13.5"
+                        />
+                      </svg>
+                    </div>
+                  ) : (
+                    <div
+                      className="ml-auto cursor-pointer"
+                      onClick={() => {
+                        editTodo(todo.id);
+                      }}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-6 h-6 hover:text-sky-500">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"
+                        />
+                      </svg>
+                    </div>
+                  )}
+
                   <div
-                    className={`${
-                      todo.completed && "line-through text-gray-500"
-                    } mb-1`}>
-                    {todo.task}
-                  </div>
-                  <div
-                    className="ml-auto cursor-pointer"
+                    className="cursor-pointer"
                     onClick={() => {
                       deleteTodo(todo.id);
                     }}>
